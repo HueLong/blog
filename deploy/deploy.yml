@@ -1,0 +1,122 @@
+version: "3.5"
+
+services:
+  web:
+    container_name: web
+    build: ./dockerfile/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - ./log/nginx:/etc/nginx/log
+    restart: always
+    networks:
+      - my_network
+
+  node:
+    container_name: node
+    build: ./dockerfile/node
+    ports:
+      - "3000"
+    volumes:
+      - ./script:/script
+    networks:
+      - my_network
+    restart: always
+    command: /bin/sh /script/start_frontend.sh test
+
+  admin_php:
+    container_name: admin_php
+    build: ./dockerfile/admin_php/test
+    volumes:
+      - ../huabaobao/admin:/huabaobao/admin
+      - ./script:/script
+      - ./log/nginx:/etc/nginx/log
+      - ./log/admin_php:/home/www-data/admin_php
+    ports:
+      - "9000"
+    restart: always
+    user: root
+    networks:
+      - my_network
+    cap_add:
+      - SYS_PTRACE
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+    restart: always
+    volumes:
+      - ./config/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  es:
+    container_name: es
+    image: elasticsearch:7.10.1
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_PASSWORD=MagicWord
+      - xpack.security.enabled=true
+    networks:
+      - my_network
+    restart: always
+    volumes:
+      - ./data/es_data:/usr/share/elasticsearch/data
+
+  go:
+    container_name: go
+    build: ./dockerfile/go
+    volumes:
+      - ../huabaobao/go:/huabaobao/go
+      - ./script:/script
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+    restart: always
+    command: ./main
+
+  mongodb:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data/mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: hbb
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"
+    networks:
+      - my_network
+    restart: always
+
+  mysql:
+    container_name: huelong-mysql
+    build: ./dockerfile/mysql
+    ports:
+      - "3608:3306"
+    volumes:
+      - ./data/db_data:/var/lib/mysql
+    restart: always
+    networks:
+      - my_network
+    environment:
+      MYSQL_ROOT_PASSWORD: "3wvCL0oleYJ9QeJ"
+      MYSQL_DATABASE: blog
+      MYSQL_USER: huelong
+      MYSQL_PASSWORD: "J1gZNPJABVePJI3"
+    command: --default-authentication-plugin=caching_sha2_password
+
+networks:
+  my_network:
+    name: my_network
