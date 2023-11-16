@@ -1,48 +1,48 @@
 version: "3.5"
 
 services:
-#  web:
-#    container_name: web
-#    build: ./dockerfile/nginx
-#    ports:
-#      - "80:80"
-#      - "443:443"
-#    volumes:
-#      - ./config/nginx:/etc/nginx/conf.d
-#      - ./ssl:/etc/nginx/ssl
-#      - ./log/nginx:/etc/nginx/log
-#    restart: always
-#    networks:
-#      - my_network
-#
-#  node:
-#    container_name: node
-#    build: ./dockerfile/node
-#    ports:
-#      - "3000"
-#    volumes:
-#      - ./script:/script
-#    networks:
-#      - my_network
-#    restart: always
-#    command: /bin/sh /script/start_frontend.sh test
-#
-#  admin_php:
-#    container_name: admin_php
-#    build: ./dockerfile/admin_php/test
-#    volumes:
-#      - ../huabaobao/admin:/huabaobao/admin
-#      - ./script:/script
-#      - ./log/nginx:/etc/nginx/log
-#      - ./log/admin_php:/home/www-data/admin_php
-#    ports:
-#      - "9000"
-#    restart: always
-#    user: root
-#    networks:
-#      - my_network
-#    cap_add:
-#      - SYS_PTRACE
+  web:
+    container_name: huelong-web
+    build: ./dockerfile/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - ./log/nginx:/etc/nginx/log
+      - ../admin:/blog/admin
+    restart: always
+    networks:
+      - my_network
+
+  node:
+    container_name: node
+    build: ./dockerfile/node
+    ports:
+      - "3000"
+    volumes:
+      - ./script:/script
+    networks:
+      - my_network
+    restart: always
+    command: /bin/sh /script/start_frontend.sh test
+
+  admin_php:
+    container_name: huelong-admin_php
+    build: ./dockerfile/admin_php
+    volumes:
+      - ../admin:/blog/admin
+      - ./script:/script
+      - ./log/admin_php:/home/www-data/admin_php
+    ports:
+      - "9000"
+    restart: always
+    user: root
+    networks:
+      - my_network
+    cap_add:
+      - SYS_PTRACE
 #
 #  redis:
 #    container_name: redis

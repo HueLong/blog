@@ -28,7 +28,7 @@ RUN docker-php-ext-install pdo  \
 RUN pecl channel-update pecl.php.net
 COPY mongodb-1.12.0.tgz /mongodb-1.12.0.tgz
 RUN pecl install /mongodb-1.12.0.tgz \
-  && docker-php-ext-enable mongodb \ 
+  && docker-php-ext-enable mongodb \
   && docker-php-source delete \
   && rm -rf /tmp/pecl-memcache-4.0.4 php7.zip \
   && apk del autoconf g++ libtool make pcre-dev
