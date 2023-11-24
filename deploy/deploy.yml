@@ -16,17 +16,17 @@ services:
     networks:
       - my_network
 
-  node:
-    container_name: node
-    build: ./dockerfile/node
-    ports:
-      - "3000"
-    volumes:
-      - ./script:/script
-    networks:
-      - my_network
-    restart: always
-    command: /bin/sh /script/start_frontend.sh test
+#  node:
+#    container_name: node
+#    build: ./dockerfile/node
+#    ports:
+#      - "3000"
+#    volumes:
+#      - ./script:/script
+#    networks:
+#      - my_network
+#    restart: always
+#    command: /bin/sh /script/start_frontend.sh test
 
   admin_php:
     container_name: huelong-admin_php
